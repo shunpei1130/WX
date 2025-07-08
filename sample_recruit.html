@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAVE XROSS式 思考スタイル診断</title>
+    <style>
+        /* CSS for styling */
+        :root {
+            --primary-color: #0d47a1; /* A deep blue, change as needed */
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --container-bg: #ffffff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #quiz-container {
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .question-scenario {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px;
+            text-align: left;
+            margin: 25px 0;
+            font-style: italic;
+        }
+
+        #choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            background-color: var(--container-bg);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--container-bg);
+        }
+
+        .start-btn {
+            background-color: var(--primary-color);
+            color: var(--container-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.2s ease;
+        }
+
+        .start-btn:hover {
+            background-color: #0a367e;
+        }
+        
+        #result-container {
+            text-align: left;
+        }
+
+        .result-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .result-description, .result-growth {
+            margin-bottom: 15px;
+        }
+
+        .result-growth b {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        /* Hide elements initially */
+        #quiz-screen, #result-screen {
+            display: none;
+        }
+
+        /* プログレスバーの追加 */
+        #progress-bar-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            height: 16px;
+            margin: 20px 0 10px 0;
+            overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color) 60%, #42a5f5 100%);
+            border-radius: 8px 0 0 8px;
+            transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="quiz-container">
+        <div id="start-screen">
+            <h1>WAVE XROSS式 思考スタイル診断</h1>
+            <p>これはテストではありません。<br>あなたの思考スタイルを知るための診断です。<br>正解・不正解はありませんので、直感でお答えください。</p>
+            <button id="start-button" class="start-btn">診断を開始する</button>
+        </div>
+
+        <div id="quiz-screen">
+            <!-- プログレスバー追加 -->
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <h2 id="question-title"></h2>
+            <div class="question-scenario">
+                <p id="question-scenario"></p>
+            </div>
+            <div id="choices"></div>
+        </div>
+
+        <div id="result-screen">
+            <!-- 結果前の入力フォーム -->
+            <form id="user-info-form" style="text-align:left; max-width:400px; margin:0 auto;">
+                <h2>診断結果を見る前にご入力ください</h2>
+                <label for="user-name">お名前 <span style="color:red;">*</span></label><br>
+                <input type="text" id="user-name" name="user-name" required style="width:100%;padding:8px;margin-bottom:10px;border-radius:4px;border:1px solid #ccc;"><br>
+                <label for="user-email">メールアドレス <span style="color:red;">*</span></label><br>
+                <input type="email" id="user-email" name="user-email" required style="width:100%;padding:8px;margin-bottom:10px;border-radius:4px;border:1px solid #ccc;"><br>
+                <label for="user-univ">大学名（任意）</label><br>
+                <input type="text" id="user-univ" name="user-univ" style="width:100%;padding:8px;margin-bottom:20px;border-radius:4px;border:1px solid #ccc;"><br>
+                <button type="submit" class="start-btn" style="width:100%;">診断結果を見る</button>
+            </form>
+            <!-- 診断結果本体（最初は非表示） -->
+            <div id="result-content" style="display:none;">
+                <p>あなたの思考スタイルは...</p>
+                <h2 id="result-type" class="result-title"></h2>
+                <div id="result-container">
+                    <h3>特徴</h3>
+                    <p id="result-description" class="result-description"></p>
+                    <h3>WAVE XROSSでの活かし方</h3>
+                    <p id="result-potential" class="result-potential"></p>
+                    <h3>"科学すべき"失敗と成長</h3>
+                    <p id="result-growth" class="result-growth"></p>
+                </div>
+                <button onclick="location.reload()" class="start-btn">もう一度診断する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for quiz logic
+        const quizData = [
+            {
+                question: "第1問",
+                scenario: "あなたがリーダーを務める新規事業。市場調査の報告書には、成功の可能性を示すデータと、失敗リスクを示すデータがほぼ同量記載されていた。どう動く？",
+                choices: [
+                    { text: "まずは「成功する」という仮説を立て、それを証明するための最小限のアクションプランを練る。", h: 2, b: 0 },
+                    { text: "判断するには情報が不足している。追加で詳細な市場調査を行い、リスクを完全に分析する。", h: -2, b: 0 }
+                ]
+            },
+            {
+                question: "第2問",
+                scenario: "プロジェクトが大詰めの段階で、クライアントから「やはり、この機能も追加したい」と急な要望が。対応すれば納期は確実に遅れるが、顧客満足度は上がるかもしれない。どうする？",
+                choices: [
+                    { text: "この追加機能がもたらすビジネスインパクトを試算し、当初の計画を覆してでも実現する価値があると判断すれば、計画の根本的な見直しを提案する。", h: 0, b: 2 },
+                    { text: "まずは当初の計画通りに納品することを最優先する。追加機能については、次のフェーズの課題として切り分けるよう交渉する。", h: 0, b: -2 }
+                ]
+            },
+            {
+                question: "第3問",
+                scenario: "競合が画期的な新サービスを発表。あなたのチームのプロジェクトは、このままでは時代遅れになる可能性がある。どうする？",
+                choices: [
+                    { text: "チームメンバーを集め、競合サービスを上回るアイデアを出すためのブレストを緊急開催。プロジェクトの方向転換も辞さない。", h: 1, b: 1 },
+                    { text: "競合の動向が自社の顧客に与える影響を冷静に分析する。データに基づき、対応の必要性を判断する。", h: -1, b: -1 },
+                    { text: "まずは自分たちのプロジェクトを確実に完成させることに集中する。競合の動きは、あくまで外部要因として捉える。", h: 0, b: -2 },
+                    { text: "すぐに動ける範囲で、自分たちのサービスに競合の要素を取り入れる小規模な改善を試みる。", h: 1, b: -1 }
+                ]
+            },
+            {
+                question: "第4問",
+                scenario: "あなたのチームは、ある課題に対して2つの解決策で意見が割れている。A案は革新的だが前例がない。B案は効果は限定的だが、過去の実績から成功は確実だ。どちらを推す？",
+                choices: [
+                    { text: "A案を推す。失敗のリスクはあるが、大きなリターンを得るためには挑戦が不可欠だと主張する。", h: 0, b: 2 },
+                    { text: "B案を推す。ビジネスは着実な成功の積み重ねが重要だと主張する。", h: 0, b: -2 }
+                ]
+            },
+            {
+                question: "第5問",
+                scenario: "プレゼン資料の作成中。参考データが膨大で、すべてを盛り込むと複雑になりすぎる。どうする？",
+                choices: [
+                    { text: "自分の主張（仮説）を最も強く裏付けるデータだけを抜き出し、シンプルで力強いストーリーを構築する。", h: 2, b: 0 },
+                    { text: "客観性を担保するため、多少複雑になっても、プラスとマイナスの両側面のデータを公平に盛り込む。", h: -2, b: 0 }
+                ]
+            }
+        ];
+
+        const results = {
+            game_changer: {
+                title: "ゲームチェンジャー",
+                description: "強いビジョンを持ち、常識にとらわれない発想で、一気に局面を打開しようとする起業家タイプです。",
+                potential: "新規事業の立ち上げや、膠着したプロジェクトに新しい風を吹き込む役割で大きな価値を発揮します。",
+                growth: "<b>科学すべき\"失敗\":</b> 時に周囲の納得を得る前に突っ走りがち。「その大胆な仮説を支える最低限のデータは何か？」を意識することで、あなたのアイデアは「夢物語」から「実現可能なプラン」に進化します。"
+            },
+            deep_analyst: {
+                title: "ディープアナリスト",
+                description: "膨大なデータの中から、誰も気づかなかった本質的な一点を見つけ出し、それを基に大胆な戦略を提言する探求者タイプです。",
+                potential: "情報セキュリティの脆弱性特定や、複雑な業務プロセスのボトルネック発見など、深い洞察力が求められる場面で活躍します。",
+                growth: "<b>科学すべき\"失敗\":</b> 分析に時間をかけすぎて、行動が遅れることがあります。「8割のデータで、まずどんな一手が打てるか？」を考えるスピード感が加われば、鬼に金棒です。"
+            },
+            architect: {
+                title: "アーキテクト",
+                description: "現状を正確に分析し、緻密な計画を立て、堅牢なシステムや仕組みを構築するのが得意な設計者タイプです。",
+                potential: "大規模なDXプロジェクトのPMO（プロジェクト管理）や、ミスの許されないシステムの安定稼働を支える基盤となります。",
+                growth: "<b>科学すべき\"失敗\":</b> 計画通りに進めることを重視するあまり、予期せぬ変化への対応が遅れがち。「計画は変更される前提で、どう変化に対応するか」という視点が、あなたをさらに強くします。"
+            },
+            lean_strategist: {
+                title: "リーンストラテジスト",
+                description: "まずは最小限の仮説で素早くプロトタイプを作り、顧客の反応を見ながら改善を繰り返していく実践家タイプです。",
+                potential: "アジャイル開発や、顧客の真のニーズが不明確な新規サービスの立ち上げフェーズで力を発揮します。",
+                growth: "<b>科学すべき\"失敗\":</b> 目先の改善に集中しすぎ、本来の目的を見失うことがあります。「この小さな一歩は、最終的にどの山を登るための一歩か？」と常に自問自答することで、あなたの実行力は正しい方向へと導かれます。"
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let hypothesisScore = 0;
+        let breakthroughScore = 0;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startButton = document.getElementById('start-button');
+        
+        const questionTitleEl = document.getElementById('question-title');
+        const questionScenarioEl = document.getElementById('question-scenario');
+        const choicesEl = document.getElementById('choices');
+        // プログレスバー要素取得
+        const progressBar = document.getElementById('progress-bar');
+
+        startButton.addEventListener('click', startQuiz);
+
+        function startQuiz() {
+            startScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionTitleEl.innerText = currentQuestion.question;
+            questionScenarioEl.innerText = currentQuestion.scenario;
+            choicesEl.innerHTML = ''; // Clear previous choices
+
+            // プログレスバー更新
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = progress + '%';
+
+            currentQuestion.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.innerText = choice.text;
+                button.classList.add('choice-btn');
+                button.addEventListener('click', () => selectAnswer(choice));
+                choicesEl.appendChild(button);
+            });
+        }
+
+        function selectAnswer(choice) {
+            hypothesisScore += choice.h;
+            breakthroughScore += choice.b;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+            // プログレスバーを100%に
+            progressBar.style.width = '100%';
+
+            // 入力フォームを表示、診断結果は非表示
+            document.getElementById('user-info-form').style.display = 'block';
+            document.getElementById('result-content').style.display = 'none';
+
+            // 診断結果データを一時保存
+            let resultKey;
+            if (hypothesisScore > 0 && breakthroughScore > 0) {
+                resultKey = 'game_changer';
+            } else if (hypothesisScore <= 0 && breakthroughScore > 0) {
+                resultKey = 'deep_analyst';
+            } else if (hypothesisScore <= 0 && breakthroughScore <= 0) {
+                resultKey = 'architect';
+            } else {
+                resultKey = 'lean_strategist';
+            }
+            const result = results[resultKey];
+            // フォーム送信時の処理
+            const userInfoForm = document.getElementById('user-info-form');
+            userInfoForm.onsubmit = function(e) {
+                e.preventDefault();
+                // 必須チェック
+                const name = document.getElementById('user-name').value.trim();
+                const email = document.getElementById('user-email').value.trim();
+                if (!name || !email) {
+                    alert('お名前とメールアドレスは必須です。');
+                    return false;
+                }
+                // 入力フォームを非表示、診断結果を表示
+                userInfoForm.style.display = 'none';
+                document.getElementById('result-content').style.display = 'block';
+                document.getElementById('result-type').innerText = result.title;
+                document.getElementById('result-description').innerText = result.description;
+                document.getElementById('result-potential').innerText = result.potential;
+                document.getElementById('result-growth').innerHTML = result.growth;
+                // 必要ならここで入力情報を送信・保存可能
+                return false;
+            };
+        }
+    </script>
+</body>
+</html>
