@@ -4,17 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WAVE XROSS式 思考スタイル診断</title>
+    <!-- Load fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Zen+Kaku+Gothic+New:wght@400&display=swap" rel="stylesheet">
     <style>
         /* CSS for styling */
         :root {
-            --primary-color: #0d47a1; /* A deep blue, change as needed */
-            --secondary-color: #f0f0f0;
+            --primary-color: #2D72B6; /* accent color */
+            --secondary-color: #C1D7EC; /* base color */
             --text-color: #333;
             --container-bg: #ffffff;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.5;
             background-color: var(--secondary-color);
             color: var(--text-color);
             display: flex;
@@ -35,6 +40,12 @@
             padding: 30px 40px;
             text-align: center;
             transition: all 0.3s ease;
+        }
+
+        #start-screen {
+            background-color: var(--secondary-color);
+            padding: 40px 20px;
+            border-radius: 8px;
         }
 
         h1 {
